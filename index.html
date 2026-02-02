@@ -1,0 +1,128 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Be My Valentine? 💘</title>
+  <style>
+    body { font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial;
+           margin: 0; background: #fff5f7; color:#1f2937; }
+    .wrap { max-width: 820px; margin: 0 auto; padding: 28px; }
+    .card { background: white; border-radius: 18px; padding: 22px;
+            box-shadow: 0 10px 30px rgba(0,0,0,.08); }
+    h1 { margin: 0 0 10px; }
+    .muted { opacity: .75; margin-top: 0; }
+    img { width: 100%; border-radius: 14px; margin-top: 14px; display:none; }
+    .q { font-size: 1.2rem; margin: 18px 0 10px; }
+    .btns { display:flex; gap:10px; flex-wrap: wrap; margin-top: 10px; }
+    button { border: 0; border-radius: 999px; padding: 12px 16px;
+             font-weight: 600; cursor: pointer; }
+    .primary { background:#fb7185; color:white; }
+    .ghost { background:#ffe4e6; }
+    .progress { margin-top: 14px; font-size:.95rem; opacity:.8; }
+    .note { margin-top: 14px; background:#fff1f2; padding:12px 14px; border-radius: 12px; }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <div class="card">
+      <h1>Hi my love 💘</h1>
+      <p class="muted">A tiny Valentine’s adventure with questions + memories.</p>
+
+      <div id="question" class="q"></div>
+
+      <div class="btns" id="buttons"></div>
+
+      <img id="photo" alt="memory photo"/>
+
+      <div class="note" id="responseBox" style="display:none;"></div>
+
+      <div class="progress" id="progress"></div>
+    </div>
+  </div>
+
+  <script>
+    // 1) Customize these:
+    const steps = [
+      {
+        q: "First question: what’s your perfect date night with me?",
+        choices: ["Cosy at home 🕯️", "Dinner out 🍝", "Adventure 🚗", "Surprise me 😌"],
+        img: "images/photo1.jpg",
+        reply: (c) => `Noted: ${c}. I love you.`
+      },
+      {
+        q: "Pick a memory you want to relive soon:",
+        choices: ["That walk we loved 🌙", "That laugh-cry moment 😂", "That trip 🧳", "A new one 💫"],
+        img: "images/photo2.jpg",
+        reply: (c) => `Okay — we’re doing: ${c}.`
+      },
+      {
+        q: "Important: will you be my Valentine?",
+        choices: ["YES 💖", "Absolutely YES 💘", "YES!!! 😭", "I thought you’d never ask 💞"],
+        img: "images/photo3.jpg",
+        reply: () => `Deal sealed. Screenshot this page and send it to me 😌💞`
+      },
+    ];
+
+    // 2) Simple “quiz” logic:
+    let i = 0;
+    const questionEl = document.getElementById("question");
+    const buttonsEl  = document.getElementById("buttons");
+    const photoEl    = document.getElementById("photo");
+    const progressEl = document.getElementById("progress");
+    const responseBox= document.getElementById("responseBox");
+
+    function render() {
+      const step = steps[i];
+      questionEl.textContent = step.q;
+      buttonsEl.innerHTML = "";
+      photoEl.style.display = "none";
+      responseBox.style.display = "none";
+
+      step.choices.forEach((c, idx) => {
+        const b = document.createElement("button");
+        b.textContent = c;
+        b.className = idx === 0 ? "primary" : "ghost";
+        b.onclick = () => choose(c);
+        buttonsEl.appendChild(b);
+      });
+
+      progressEl.textContent = `Question ${i+1} of ${steps.length}`;
+    }
+
+    function choose(choice) {
+      const step = steps[i];
+      // show photo
+      photoEl.src = step.img;
+      photoEl.style.display = "block";
+
+      // show response message
+      const msg = step.reply ? step.reply(choice) : `Aww: ${choice}`;
+      responseBox.textContent = msg;
+      responseBox.style.display = "block";
+
+      // change buttons to next/back
+      buttonsEl.innerHTML = "";
+
+      if (i > 0) {
+        const back = document.createElement("button");
+        back.textContent = "← Back";
+        back.className = "ghost";
+        back.onclick = () => { i--; render(); };
+        buttonsEl.appendChild(back);
+      }
+
+      const next = document.createElement("button");
+      next.textContent = (i === steps.length - 1) ? "Restart ↺" : "Next →";
+      next.className = "primary";
+      next.onclick = () => {
+        if (i === steps.length - 1) { i = 0; render(); }
+        else { i++; render(); }
+      };
+      buttonsEl.appendChild(next);
+    }
+
+    render();
+  </script>
+</body>
+</html>
